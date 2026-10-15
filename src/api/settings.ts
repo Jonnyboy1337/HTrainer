@@ -6,11 +6,12 @@ export interface Settings {
   apiKey: string;
   /** User's own extra blacklist (space-separated). Adds to, never replaces, the hard filter. */
   extraBlacklist: string;
+  hideAiGenerated: boolean;
 }
 
 const KEY = 'htrainer-settings';
 
-const DEFAULTS: Settings = { userId: '', apiKey: '', extraBlacklist: '' };
+const DEFAULTS: Settings = { userId: '', apiKey: '', extraBlacklist: '', hideAiGenerated: true };
 
 export function loadSettings(): Settings {
   try {
@@ -31,4 +32,8 @@ export function saveSettings(s: Settings): void {
 
 export function hasCredentials(s: Settings): boolean {
   return s.userId.trim() !== '' && s.apiKey.trim() !== '';
+}
+
+export function extraBlacklist(s: Settings): string[] {
+  return s.extraBlacklist.split(/\s+/).filter(Boolean).map((t) => t.replace(/^-/, '').toLowerCase());
 }

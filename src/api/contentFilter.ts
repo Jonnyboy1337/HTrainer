@@ -19,6 +19,7 @@ export const QUERY_EXCLUSIONS: readonly string[] = [
   'photo_(medium)',
   'real_person',
   'celebrity',
+  'aged_up',
 ];
 
 /**

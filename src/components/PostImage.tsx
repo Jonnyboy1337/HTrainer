@@ -1,26 +1,18 @@
-import { useCallback, useEffect, useState } from 'react';
-import { hidePost, pickPost, type Post } from '../api/rule34';
+import { useEffect, useState } from 'react';
+import { hidePost, hiddenPosts, searchPosts, type Post } from '../api/rule34';
 import { hasCredentials } from '../api/settings';
 import { useSettings } from './SettingsContext';
 
-interface Props {
-  characterTag: string;
-  /** Tag sets tried in order; characterTag is prepended to each. */
-  tagSets: string[][];
-  alt: string;
-}
-
 type State =
   | { kind: 'loading' }
-  | { kind: 'ready'; post: Post }
-  | { kind: 'empty' }
+  | { kind: 'ready'; post: Post | null }
   | { kind: 'error'; message: string };
 
-export function PostImage({ characterTag, tagSets, alt }: Props) {
+/** Lightweight preview (one search) for girls you don't own yet. */
+export function PostImage({ tag, alt }: { tag: string; alt: string }) {
   const { settings } = useSettings();
   const [state, setState] = useState<State>({ kind: 'loading' });
   const [nonce, setNonce] = useState(0);
-  const key = JSON.stringify(tagSets);
 
   useEffect(() => {
     if (!hasCredentials(settings)) {
@@ -28,34 +20,28 @@ export function PostImage({ characterTag, tagSets, alt }: Props) {
       return;
     }
     let cancelled = false;
-    setState({ kind: 'loading' });
-    const sets = tagSets.map((t) => [characterTag, ...t]);
-    pickPost(sets, settings)
-      .then((post) => !cancelled && setState(post ? { kind: 'ready', post } : { kind: 'empty' }))
-      .catch((err: Error) => !cancelled && setState({ kind: 'error', message: err.message }));
+    searchPosts([tag, 'solo', 'score:>=3'], settings)
+      .then((posts) => {
+        if (cancelled) return;
+        const usable = posts.filter((p) => !hiddenPosts().has(p.id));
+        setState({ kind: 'ready', post: usable.length ? usable[Math.floor(Math.random() * usable.length)] : null });
+      })
+      .catch((e: Error) => !cancelled && setState({ kind: 'error', message: e.message }));
     return () => {
       cancelled = true;
     };
-    // tagSets is compared by value via `key`.
-  }, [characterTag, key, settings, nonce]);
+  }, [tag, settings, nonce]);
 
-  const reroll = useCallback(() => setNonce((n) => n + 1), []);
-  const hide = useCallback(() => {
-    if (state.kind === 'ready') hidePost(state.post.id);
-    reroll();
-  }, [state, reroll]);
-
+  const post = state.kind === 'ready' ? state.post : null;
   return (
     <div className="post-image">
       {state.kind === 'loading' && <div className="post-placeholder">Loading...</div>}
-      {state.kind === 'empty' && <div className="post-placeholder">No image found</div>}
       {state.kind === 'error' && <div className="post-placeholder error">{state.message}</div>}
-      {state.kind === 'ready' && (
+      {state.kind === 'ready' && !post && <div className="post-placeholder">No image found</div>}
+      {post && (
         <>
-          <img src={state.post.imageUrl} alt={alt} referrerPolicy="no-referrer" loading="lazy" onClick={reroll} title="Click for another image" />
-          <button className="hide-btn" onClick={hide} title="Never show this image again">
-            Hide
-          </button>
+          <img src={post.imageUrl} alt={alt} referrerPolicy="no-referrer" loading="lazy" onClick={() => setNonce((n) => n + 1)} title="Click for another image" />
+          <button className="hide-btn" onClick={() => { hidePost(post.id); setNonce((n) => n + 1); }} title="Never show this image again">Hide</button>
         </>
       )}
     </div>

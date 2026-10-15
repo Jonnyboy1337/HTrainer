@@ -90,3 +90,76 @@ main { padding-top: 16px; }
   .report-entry { grid-template-columns: 1fr; }
   .report-entry > div:last-child { padding: 0 10px 10px; }
 }
+
+/* ---- v2 layout ---- */
+.error { color: var(--accent-2); }
+.row.tight { margin-top: 0; margin-bottom: 12px; }
+.row.tight p { margin: 0; }
+button.card { text-align: left; padding: 0; font: inherit; color: inherit; }
+.card.clickable { cursor: pointer; transition: border-color 0.15s, transform 0.15s; }
+.card.clickable:hover { border-color: var(--accent-2); transform: translateY(-2px); }
+.ready { color: var(--good); }
+
+.box { background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin: 10px 0; }
+.box h3 { margin-bottom: 0.2em; }
+.list { display: grid; gap: 10px; }
+.upgrade { display: flex; align-items: center; gap: 16px; justify-content: space-between; }
+.upgrade p { margin: 0.2em 0 0; }
+
+.close { position: absolute; top: 10px; right: 10px; padding: 0.2em 0.6em; z-index: 2; }
+.panel { position: relative; }
+.panel.detail { max-width: 1180px; }
+.detail-grid { display: grid; grid-template-columns: 280px 260px 1fr; gap: 20px; align-items: start; }
+.detail-actions h3 { margin-top: 0.9em; }
+.post-image.tall { border-radius: 8px; }
+@media (max-width: 1000px) { .detail-grid { grid-template-columns: 1fr 1fr; } .detail-actions { grid-column: 1 / -1; } }
+@media (max-width: 620px) { .detail-grid { grid-template-columns: 1fr; } }
+
+.stat-block { margin: 8px 0; }
+.stat-sep { height: 1px; background: var(--border); margin: 8px 0; }
+.bar-track { position: relative; }
+.bar-marker { position: absolute; top: -2px; bottom: -2px; width: 2px; background: #fff; opacity: 0.85; }
+.bar.obedience .bar-fill { background: #7b8cff; }
+.bar.lust .bar-fill { background: #ff6fa8; }
+.bar.affection .bar-fill { background: var(--good); }
+.bar.fear .bar-fill { background: #9a5cd6; }
+.bar.pref1 .bar-label { color: var(--good); }
+.bar.pref-1 .bar-label { color: var(--bad); }
+
+.action-group { margin: 8px 0; }
+.group-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 4px; }
+.action-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.action { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 0.4em 0.75em; }
+.chance { font-size: 0.72rem; color: var(--muted); }
+.chance.good { color: var(--good); }
+.chance.mid { color: #e3b341; }
+.chance.bad { color: var(--bad); }
+
+.reqs { list-style: none; padding: 0; margin: 6px 0; display: flex; flex-wrap: wrap; gap: 4px 6px; }
+.reqs li { font-size: 0.8rem; padding: 2px 8px; border-radius: 999px; background: #120e15; border: 1px solid var(--border); }
+.reqs li.ok { border-color: var(--good); color: var(--good); }
+.reqs li.missing { border-color: var(--bad); }
+.buyer-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 1px solid var(--border); padding: 6px 0; }
+
+.scene { display: grid; grid-template-columns: minmax(240px, 420px) 1fr; gap: 18px; align-items: start; border-left: 4px solid var(--good); padding-left: 12px; }
+.scene.refused { border-left-color: var(--bad); }
+.scene.punished { border-left-color: #9a5cd6; }
+.scene.exhausted { border-left-color: #e3b341; }
+.scene-img { border-radius: 8px; aspect-ratio: auto; min-height: 280px; max-height: 70vh; }
+.scene-img img { object-fit: contain; }
+.report-list .scene { background: var(--panel-2); border-radius: 8px; padding: 10px; grid-template-columns: 200px 1fr; }
+.report-list .scene-img { min-height: 200px; }
+.deltas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; font-size: 0.82rem; }
+.deltas span { padding: 2px 8px; border-radius: 999px; background: #120e15; }
+.deltas .up { color: var(--good); }
+.deltas .down { color: var(--bad); }
+.deltas .neutral { color: #c49cf0; }
+@media (max-width: 620px) { .scene, .report-list .scene { grid-template-columns: 1fr; } }
+
+.suggestions { list-style: none; padding: 0; margin: 6px 0; max-height: 240px; overflow: auto; }
+.suggestions li { padding: 3px 0; }
+.custom-list { padding-left: 1.2em; }
+label.check { display: flex; gap: 8px; align-items: center; }
+label.check input { width: auto; margin: 0; }
+.log-title { margin-top: 24px; }
+.log { padding-left: 1.2em; color: var(--muted); font-size: 0.9rem; }

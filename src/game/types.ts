@@ -1,78 +1,104 @@
-export const STAT_KEYS = ['obedience', 'lust', 'charm', 'service', 'sex', 'fetish'] as const;
-export type StatKey = (typeof STAT_KEYS)[number];
+export const CORE_STATS = ['obedience', 'lust', 'affection', 'fear'] as const;
+export const SKILLS = ['oral', 'hands', 'breasts', 'vaginal', 'anal', 'fetish', 'lesbian'] as const;
+
+export type CoreStat = (typeof CORE_STATS)[number];
+export type Skill = (typeof SKILLS)[number];
+export type StatKey = CoreStat | Skill;
 export type Stats = Record<StatKey, number>;
 
-export type TraitId = 'proud' | 'shy' | 'lustful' | 'elegant' | 'dominant' | 'diligent';
+/** -1 dislike, 0 neutral, 1 like */
+export type Preference = -1 | 0 | 1;
 
-export interface CharacterDef {
-  id: string;
+export interface CharacterRef {
+  /** Rule34 character tag. */
+  tag: string;
   name: string;
   series: string;
-  /** Rule34 character tag. Only canonically adult characters belong in the roster. */
-  tag: string;
-  base: Stats;
-  trait: TraitId;
+}
+
+export interface CommissionTerms {
+  purposeId: string;
+  client: string;
+  reqs: Partial<Stats>;
+  reward: number;
+  penalty: number;
+  days: number;
+}
+
+export interface Girl {
+  uid: string;
+  ref: CharacterRef;
+  /** Optional variant tag used instead of ref.tag for a consistent look. */
+  look: string | null;
+  stats: Stats;
+  energy: number;
+  prefs: Record<Skill, Preference>;
+  known: Record<Skill, boolean>;
+  shiftId: string;
+  /** Set while she is here on commission. */
+  commission: (CommissionTerms & { dueDay: number }) | null;
+  /** Gold paid for her (0 for commissions). */
+  paid: number;
+  arrivedDay: number;
+}
+
+export interface MarketOffer {
+  girl: Girl;
   price: number;
 }
 
-export type ActivityKind = 'rest' | 'train' | 'job';
-
-export interface ActivityDef {
+export interface CommissionOffer {
   id: string;
+  girl: Girl;
+  terms: CommissionTerms;
+}
+
+export interface Buyer {
+  id: string;
+  name: string;
+  purposeId: string;
+  reqs: Partial<Stats>;
+  budget: number;
+  leavesDay: number;
+}
+
+export type Outcome = 'success' | 'refused' | 'punished' | 'exhausted';
+
+export interface SceneResult {
+  uid: string;
+  name: string;
+  imageTag: string;
   label: string;
-  kind: ActivityKind;
-  description: string;
-  /** Willingness (obedience + lust mix) needed to comply. */
-  difficulty: number;
-  energy: number;
-  /** Gold cost for training. */
-  cost: number;
-  gains: Partial<Stats>;
-  /** Job: stats that drive income, and base pay. */
-  incomeStats?: StatKey[];
-  pay?: number;
-  /** Tag sets tried in order; the character tag is prepended to each. */
-  imageTags: string[][];
-}
-
-export interface Character {
-  defId: string;
-  stats: Stats;
-  energy: number;
-  mood: number;
-  activityId: string;
-}
-
-export type Outcome = 'success' | 'refused' | 'exhausted';
-
-export interface ReportEntry {
-  defId: string;
-  activityId: string;
+  scenes: string[];
   outcome: Outcome;
-  gold: number;
-  changes: Partial<Stats>;
-  text: string;
+  text: string[];
+  changes: Partial<Stats> & { energy?: number; gold?: number };
+  canPunish: boolean;
 }
 
-export interface DayReport {
+export interface EveningReport {
   day: number;
-  entries: ReportEntry[];
+  shifts: SceneResult[];
   upkeep: number;
   events: string[];
 }
 
-export type GameStatus = 'choosing' | 'playing' | 'won' | 'lost';
+export type GameStatus = 'playing' | 'lost';
 
 export interface GameState {
-  version: 1;
+  version: 2;
   status: GameStatus;
   day: number;
   gold: number;
-  debt: number;
   reputation: number;
-  owned: Character[];
-  market: string[];
-  starterChoices: string[];
-  report: DayReport | null;
+  sessionsUsed: number;
+  girls: Girl[];
+  upgrades: Record<string, number>;
+  market: MarketOffer[];
+  commissions: CommissionOffer[];
+  buyers: Buyer[];
+  scene: SceneResult | null;
+  report: EveningReport | null;
   daysInRed: number;
+  log: string[];
 }

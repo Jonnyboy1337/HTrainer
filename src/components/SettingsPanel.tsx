@@ -46,8 +46,12 @@ export function SettingsPanel({ onClose }: { onClose: () => void }) {
             onChange={(e) => setDraft({ ...draft, extraBlacklist: e.target.value })}
           />
         </label>
+        <label className="check">
+          <input type="checkbox" checked={draft.hideAiGenerated} onChange={(e) => setDraft({ ...draft, hideAiGenerated: e.target.checked })} />
+          Hide AI-generated images
+        </label>
         <p className="muted small">
-          Content involving minors, photographs and real people is always filtered out and cannot be enabled.
+          Content tagged as involving minors, photographs and real people is always filtered out and cannot be enabled.
         </p>
         {test && <p className="small">{test}</p>}
         <div className="row">

@@ -1,41 +1,69 @@
-import type { CharacterDef, Stats } from './types';
+import type { CharacterRef } from './types';
 
-// Roster rule: ONLY characters who are canonically adults. Do not add
-// characters who are minors or ambiguous in canon, regardless of art style.
+// Roster rule: ONLY characters who are adults (18+) in canon. Characters who
+// are minors in canon are not allowed, regardless of art style or "aged up" art.
 
-const s = (o: number, l: number, c: number, sv: number, sx: number, f: number): Stats => ({
-  obedience: o, lust: l, charm: c, service: sv, sex: sx, fetish: f,
-});
-
-export const CHARACTERS: readonly CharacterDef[] = [
-  { id: 'tifa', name: 'Tifa Lockhart', series: 'Final Fantasy VII', tag: 'tifa_lockhart', base: s(20, 15, 45, 10, 10, 5), trait: 'shy', price: 900 },
-  { id: 'bayonetta', name: 'Bayonetta', series: 'Bayonetta', tag: 'bayonetta_(character)', base: s(5, 45, 60, 20, 25, 25), trait: 'dominant', price: 1400 },
-  { id: 'samus', name: 'Samus Aran', series: 'Metroid', tag: 'samus_aran', base: s(10, 10, 35, 5, 10, 5), trait: 'proud', price: 800 },
-  { id: 'lara', name: 'Lara Croft', series: 'Tomb Raider', tag: 'lara_croft', base: s(10, 20, 45, 10, 15, 10), trait: 'proud', price: 1000 },
-  { id: 'robin', name: 'Nico Robin', series: 'One Piece', tag: 'nico_robin', base: s(25, 20, 50, 15, 15, 10), trait: 'elegant', price: 1100 },
-  { id: 'hancock', name: 'Boa Hancock', series: 'One Piece', tag: 'boa_hancock', base: s(0, 25, 70, 5, 10, 15), trait: 'proud', price: 1500 },
-  { id: 'jill', name: 'Jill Valentine', series: 'Resident Evil', tag: 'jill_valentine', base: s(20, 15, 40, 10, 10, 5), trait: 'diligent', price: 850 },
-  { id: 'ada', name: 'Ada Wong', series: 'Resident Evil', tag: 'ada_wong', base: s(10, 30, 55, 15, 20, 15), trait: 'elegant', price: 1200 },
-  { id: 'yoruichi', name: 'Yoruichi Shihouin', series: 'Bleach', tag: 'yoruichi_shihouin', base: s(15, 40, 45, 15, 20, 15), trait: 'lustful', price: 1100 },
-  { id: '2b', name: '2B', series: 'NieR:Automata', tag: 'yorha_2b', base: s(35, 5, 45, 10, 5, 5), trait: 'diligent', price: 1000 },
-  { id: 'albedo', name: 'Albedo', series: 'Overlord', tag: 'albedo_(overlord)', base: s(30, 55, 55, 20, 20, 20), trait: 'lustful', price: 1300 },
-  { id: 'makima', name: 'Makima', series: 'Chainsaw Man', tag: 'makima_(chainsaw_man)', base: s(0, 20, 55, 10, 15, 30), trait: 'dominant', price: 1400 },
-  { id: 'jessica', name: 'Jessica Rabbit', series: 'Who Framed Roger Rabbit', tag: 'jessica_rabbit', base: s(20, 35, 65, 15, 15, 10), trait: 'elegant', price: 1250 },
+export const ROSTER: readonly CharacterRef[] = [
+  { tag: 'tifa_lockhart', name: 'Tifa Lockhart', series: 'Final Fantasy VII' },
+  { tag: 'aerith_gainsborough', name: 'Aerith Gainsborough', series: 'Final Fantasy VII' },
+  { tag: 'bayonetta_(character)', name: 'Bayonetta', series: 'Bayonetta' },
+  { tag: 'samus_aran', name: 'Samus Aran', series: 'Metroid' },
+  { tag: 'lara_croft', name: 'Lara Croft', series: 'Tomb Raider' },
+  { tag: 'nico_robin', name: 'Nico Robin', series: 'One Piece' },
+  { tag: 'nami_(one_piece)', name: 'Nami', series: 'One Piece' },
+  { tag: 'boa_hancock', name: 'Boa Hancock', series: 'One Piece' },
+  { tag: 'jill_valentine', name: 'Jill Valentine', series: 'Resident Evil' },
+  { tag: 'ada_wong', name: 'Ada Wong', series: 'Resident Evil' },
+  { tag: 'yoruichi_shihouin', name: 'Yoruichi Shihouin', series: 'Bleach' },
+  { tag: 'yorha_2b', name: '2B', series: 'NieR:Automata' },
+  { tag: 'albedo_(overlord)', name: 'Albedo', series: 'Overlord' },
+  { tag: 'makima_(chainsaw_man)', name: 'Makima', series: 'Chainsaw Man' },
+  { tag: 'jessica_rabbit', name: 'Jessica Rabbit', series: 'Who Framed Roger Rabbit' },
+  { tag: 'rias_gremory', name: 'Rias Gremory', series: 'High School DxD' },
+  { tag: 'yennefer', name: 'Yennefer', series: 'The Witcher' },
+  { tag: 'triss_merigold', name: 'Triss Merigold', series: 'The Witcher' },
+  { tag: 'widowmaker', name: 'Widowmaker', series: 'Overwatch' },
+  { tag: 'chun-li', name: 'Chun-Li', series: 'Street Fighter' },
+  { tag: 'mai_shiranui', name: 'Mai Shiranui', series: 'Fatal Fury' },
+  { tag: 'morrigan_aensland', name: 'Morrigan Aensland', series: 'Darkstalkers' },
+  { tag: 'tsunade', name: 'Tsunade', series: 'Naruto' },
+  { tag: 'esdeath_(akame_ga_kill!)', name: 'Esdeath', series: 'Akame ga Kill!' },
+  { tag: 'erza_scarlet', name: 'Erza Scarlet', series: 'Fairy Tail' },
+  { tag: 'kitana', name: 'Kitana', series: 'Mortal Kombat' },
 ];
 
-const byId = new Map(CHARACTERS.map((c) => [c.id, c]));
+// ---- custom characters added by the player (per browser) ----
 
-export function getDef(id: string): CharacterDef {
-  const def = byId.get(id);
-  if (!def) throw new Error(`Unknown character: ${id}`);
-  return def;
+const CUSTOM_KEY = 'htrainer-custom-characters';
+
+export function loadCustom(): CharacterRef[] {
+  try {
+    return JSON.parse(localStorage.getItem(CUSTOM_KEY) ?? '[]');
+  } catch {
+    return [];
+  }
 }
 
-export const TRAIT_INFO: Record<CharacterDef['trait'], { label: string; text: string }> = {
-  proud: { label: 'Proud', text: 'Obedience grows 30% slower.' },
-  shy: { label: 'Shy', text: 'Lust grows slower, charm grows faster.' },
-  lustful: { label: 'Lustful', text: 'Lust and sex skill grow 30% faster.' },
-  elegant: { label: 'Elegant', text: 'Earns 25% more on charm-based jobs.' },
-  dominant: { label: 'Dominant', text: 'Fetish grows faster, obedience slower.' },
-  diligent: { label: 'Diligent', text: 'Uses 25% less energy.' },
-};
+export function saveCustom(list: CharacterRef[]): void {
+  try {
+    localStorage.setItem(CUSTOM_KEY, JSON.stringify(list));
+  } catch {
+    // custom list lasts for this session only
+  }
+}
+
+export function allCharacters(): CharacterRef[] {
+  const custom = loadCustom();
+  const tags = new Set(custom.map((c) => c.tag));
+  return [...ROSTER.filter((c) => !tags.has(c.tag)), ...custom];
+}
+
+const titleCase = (s: string) => s.replace(/(^|\s|-)\S/g, (m) => m.toUpperCase());
+
+/** "nami_(one_piece)" -> { name: "Nami", series: "One Piece" } */
+export function refFromTag(tag: string): CharacterRef {
+  const m = /^(.*?)_\(([^()]+)\)$/.exec(tag);
+  const base = (m ? m[1] : tag).replace(/_/g, ' ');
+  const series = m ? m[2].replace(/_/g, ' ') : '';
+  return { tag, name: titleCase(base), series: titleCase(series) };
+}
