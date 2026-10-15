@@ -17,7 +17,7 @@ export const CHARACTERS: readonly CharacterDef[] = [
   { id: 'jill', name: 'Jill Valentine', series: 'Resident Evil', tag: 'jill_valentine', base: s(20, 15, 40, 10, 10, 5), trait: 'diligent', price: 850 },
   { id: 'ada', name: 'Ada Wong', series: 'Resident Evil', tag: 'ada_wong', base: s(10, 30, 55, 15, 20, 15), trait: 'elegant', price: 1200 },
   { id: 'yoruichi', name: 'Yoruichi Shihouin', series: 'Bleach', tag: 'yoruichi_shihouin', base: s(15, 40, 45, 15, 20, 15), trait: 'lustful', price: 1100 },
-  { id: '2b', name: '2B', series: 'NieR:Automata', tag: '2b_(nier:automata)', base: s(35, 5, 45, 10, 5, 5), trait: 'diligent', price: 1000 },
+  { id: '2b', name: '2B', series: 'NieR:Automata', tag: 'yorha_2b', base: s(35, 5, 45, 10, 5, 5), trait: 'diligent', price: 1000 },
   { id: 'albedo', name: 'Albedo', series: 'Overlord', tag: 'albedo_(overlord)', base: s(30, 55, 55, 20, 20, 20), trait: 'lustful', price: 1300 },
   { id: 'makima', name: 'Makima', series: 'Chainsaw Man', tag: 'makima_(chainsaw_man)', base: s(0, 20, 55, 10, 15, 30), trait: 'dominant', price: 1400 },
   { id: 'jessica', name: 'Jessica Rabbit', series: 'Who Framed Roger Rabbit', tag: 'jessica_rabbit', base: s(20, 35, 65, 15, 15, 10), trait: 'elegant', price: 1250 },

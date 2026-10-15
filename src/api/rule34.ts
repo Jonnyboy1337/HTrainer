@@ -48,6 +48,68 @@ export function hidePost(id: number): void {
   }
 }
 
+// ---- request queue (the API rate-limits bursts with HTTP 429) ----
+
+const MIN_GAP_MS = 350;
+const MAX_RETRIES = 4;
+let queue: Promise<unknown> = Promise.resolve();
+
+const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/** Runs requests one at a time with a gap, retrying 429s with backoff. */
+function throttledFetch(url: string): Promise<Response> {
+  const run = async () => {
+    for (let attempt = 0; ; attempt++) {
+      const res = await fetch(url);
+      if (res.status !== 429 || attempt >= MAX_RETRIES) {
+        await wait(MIN_GAP_MS);
+        return res;
+      }
+      await wait(2000 * 2 ** attempt);
+    }
+  };
+  const result = queue.then(run, run);
+  queue = result.catch(() => undefined);
+  return result;
+}
+
+// ---- persistent result cache ----
+
+const STORE_KEY = 'htrainer-search-cache';
+const STORE_TTL_MS = 12 * 60 * 60 * 1000;
+// Kept small: localStorage is ~5 MB and post tag lists are long.
+const STORE_MAX_ENTRIES = 60;
+const STORE_MAX_POSTS = 40;
+
+type Stored = Record<string, { at: number; posts: Post[] }>;
+
+function readStore(): Stored {
+  try {
+    return JSON.parse(localStorage.getItem(STORE_KEY) ?? '{}');
+  } catch {
+    return {};
+  }
+}
+
+function getStored(tags: string): Post[] | null {
+  const hit = readStore()[tags];
+  // Re-filter on read so filter updates also apply to cached results.
+  return hit && Date.now() - hit.at < STORE_TTL_MS ? hit.posts.filter((p) => isPostAllowed(p.tags)) : null;
+}
+
+function putStored(tags: string, posts: Post[]): void {
+  const store = readStore();
+  store[tags] = { at: Date.now(), posts: posts.slice(0, STORE_MAX_POSTS) };
+  const keys = Object.keys(store).sort((a, b) => store[b].at - store[a].at);
+  for (const k of keys.slice(STORE_MAX_ENTRIES)) delete store[k];
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify(store));
+  } catch {
+    // quota exceeded - drop the persistent cache and keep going
+    try { localStorage.removeItem(STORE_KEY); } catch { /* ignore */ }
+  }
+}
+
 // ---- search ----
 
 const cache = new Map<string, Promise<Post[]>>();
@@ -71,6 +133,12 @@ export function searchPosts(include: string[], settings: Settings): Promise<Post
   const tags = buildTags([...include, 'sort:score'], settings);
   const cached = cache.get(tags);
   if (cached) return cached;
+  const stored = getStored(tags);
+  if (stored) {
+    const p = Promise.resolve(stored);
+    cache.set(tags, p);
+    return p;
+  }
 
   const params = new URLSearchParams({
     page: 'dapi',
@@ -86,8 +154,9 @@ export function searchPosts(include: string[], settings: Settings): Promise<Post
 
   const extra = new Set(settings.extraBlacklist.split(/\s+/).filter(Boolean));
 
-  const request = fetch(`${API}?${params}`)
+  const request = throttledFetch(`${API}?${params}`)
     .then(async (res) => {
+      if (res.status === 429) throw new ApiError('Rate limited by Rule34. Wait a minute, then click to retry.');
       if (!res.ok) throw new ApiError(`API request failed (HTTP ${res.status})`);
       const text = await res.text();
       if (text.trim() === '') return [];
@@ -101,6 +170,10 @@ export function searchPosts(include: string[], settings: Settings): Promise<Post
         .map(toPost)
         .filter((p): p is Post => p !== null)
         .filter((p) => isPostAllowed(p.tags) && !p.tags.some((t) => extra.has(t)));
+    })
+    .then((posts) => {
+      putStored(tags, posts);
+      return posts;
     })
     .catch((err) => {
       cache.delete(tags); // allow retry after errors
